@@ -7,3 +7,8 @@ node_modules/
 Thumbs.db
 coverage/
 .openai/
+data/
+dist/
+*.sqlite*
+
+worker/assets.generated.mjs

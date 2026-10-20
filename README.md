@@ -1,64 +1,62 @@
-# KURTOS
+# KURTOS · Ventas y caja
 
-Repositorio inicial de la futura app de ventas KURTOS. Actualmente contiene el personalizador 3D de productos, desarrollado a partir de las referencias del negocio.
+Aplicación para un local con una caja abierta a la vez. Incluye menú, personalizador 3D, registro de cobros, preparación de pedidos y conciliación de caja.
 
-## Ejecutar
+## Ejecutar localmente
 
-Requiere Node.js 20 o superior. No hace falta instalar dependencias para ejecutar esta versión.
+Requiere **Node.js 22.13 o superior** (recomendado: Node 24).
 
 ```sh
+npm ci
 npm run dev
 ```
 
-Abrir **http://127.0.0.1:4173**. Para usar otro puerto: definir la variable de entorno `PORT`.
+Abrir **http://127.0.0.1:4173**. Las migraciones se aplican automáticamente a la base local al iniciar. La base persistente se guarda en `data/kurtos.sqlite`, excluida de Git. Las variables `PORT` y `DATABASE_PATH` permiten usar otro puerto y archivo.
 
 ```sh
 npm run check
+npm test
+npm run build
 ```
 
-El servidor incluido es para desarrollo local. Los archivos de `apps/configurator` se pueden servir desde cualquier hosting estático; no hay paso de compilación. Se debe abrir a través de HTTP, porque el visor utiliza módulos JavaScript.
+`npm test` utiliza bases temporales independientes y no modifica datos operativos. `npm run build` genera el Worker en `dist/server/index.js`, con todos los recursos estáticos integrados. La app ya necesita un servidor y base de datos: no basta con abrir su HTML ni servir únicamente archivos estáticos.
 
-## Incluye
+## Funciones
 
-- Elección progresiva: cono → relleno → helado → toppings.
-- Modelo 3D con giro, zoom y rotación automática.
-- Animaciones de aplicación del relleno, formación del helado y caída de toppings.
-- Repetición de la preparación, navegación entre pasos y reinicio.
-- Carrito de demostración persistido en el navegador.
-- Vista adaptable a celular y controles accesibles por botones.
-- Cono con la última corrección de altura, aproximadamente un 20 % más corto.
+- Apertura de caja con responsable y saldo inicial en efectivo.
+- Menú con los ocho productos y precios de la referencia del negocio.
+- Variantes de sabores y rellenos, cantidades y observaciones.
+- Personalizador 3D integrado en el pedido de venta.
+- Cobro en efectivo con cambio, o QR/tarjeta con confirmación y referencia manual.
+- Total recalculado en el servidor e idempotencia de cobros.
+- Pedidos: en preparación → listo → entregado.
+- Ingresos y retiros de efectivo con motivo.
+- Devoluciones completas durante el turno abierto, conservando la venta original.
+- Cierre con efectivo esperado, contado, diferencia y resumen por medio de pago.
+- Historial, comprobantes internos imprimibles y exportación de registros.
+- Edición de precios, disponibilidad y tarifa del personalizado.
+- SQLite local y D1 en el sitio alojado, con migraciones versionadas.
 
-## Estructura
+## Documentación
 
-```text
-apps/configurator/
-  index.html       Interfaz y carga del personalizador
-  app.js           Selecciones, pasos, precios de ejemplo y carrito local
-  kurtos-3d.js     Geometría, materiales, interacción y animaciones
-  style.css        Estilos de la interfaz
-  viewer.css       Apariencia del visor 3D y adaptación móvil
-  vendor/         Three.js 0.170.0 y sus controles (licencia incluida)
-docs/
-  integration.md  Contrato actual y puntos de integración con ventas
-  references/     Guía visual aprobada y menú de referencia
-scripts/
-  serve.mjs       Servidor de desarrollo sin dependencias
-```
-
-## Estado de la app de ventas
-
-**Esta versión todavía es un prototipo de configuración.** Los precios son ejemplos y el carrito se guarda únicamente en `localStorage`. No se crean pedidos reales ni se procesan pagos. El menú adjunto es una referencia del negocio; sus precios e ingredientes todavía no están conectados al catálogo de la interfaz.
-
-Para convertirla en una app de ventas completa faltan catálogo administrable, precios y disponibilidad validados en servidor, pedidos persistentes, usuarios y permisos, cobros y el flujo de atención del negocio. La integración puede reutilizar el visor 3D sin trasladar la lógica comercial al navegador. Ver [contrato de integración](docs/integration.md).
-
-## Referencias
-
+- [Cómo operar la caja y las ventas](docs/operations.md).
+- [Arquitectura, persistencia y API](docs/architecture.md).
 - [Guía visual aprobada](docs/references/kurtos-aprobado.png).
-- [Menú original del negocio](docs/references/menu-original.png).
-- [Demo publicada](https://cono-studio-quyi.sandraabasto.chatgpt.site/).
+- [Menú original](docs/references/menu-original.png).
+- [Aplicación publicada](https://cono-studio-quyi.sandraabasto.chatgpt.site/).
 
-El repositorio contiene el código fuente editable de la demo actual. Los cambios en GitHub no despliegan automáticamente el sitio de la demo: todavía no hay un flujo de despliegue conectado a este repositorio.
+## Consideraciones de operación
 
-## Dependencias y recursos
+**Revisar las tarifas de personalizados antes de operar**: los importes iniciales de ingredientes provienen del prototipo. Los precios iniciales del menú terminado proceden de la imagen suministrada.
 
-Three.js está incluido en `vendor/` para que el visor funcione sin depender de un CDN. Sus archivos mantienen su [licencia MIT original](apps/configurator/vendor/THREE-LICENSE.txt). Las fuentes tipográficas se solicitan a Google Fonts; sin conexión se utilizan las fuentes de respaldo del sistema.
+QR y tarjeta son registros manuales; no hay conexión bancaria ni cargos automáticos. Los comprobantes son internos, no facturas fiscales. No se incluyen inventario, pagos divididos, usuarios por empleado, varias cajas/sucursales ni devoluciones de turnos cerrados.
+
+El nombre del responsable identifica el turno y no autentica a un empleado. El sitio conserva acceso privado del propietario. El servidor local escucha solo en 127.0.0.1; antes de exponerlo públicamente en otro entorno se necesita autenticación y HTTPS.
+
+## Desarrollo y publicación
+
+`apps/pos` contiene el punto de venta; `apps/configurator`, el visor 3D; `server`, las reglas y adaptadores; `db` y `drizzle`, el esquema y migraciones; `worker`, la entrada alojada; `tests`, las pruebas del negocio.
+
+El despliegue Sites usa el binding D1 `DB`. Su configuración de cuenta y credenciales no están incluidas en GitHub. Los datos locales y alojados están separados y los datos de prueba nunca se copian al despliegue. GitHub todavía no tiene un despliegue automático configurado.
+
+Three.js 0.170.0 está incluido y conserva su [licencia MIT](apps/configurator/vendor/THREE-LICENSE.txt). Las fuentes de Google Fonts cuentan con respaldos del sistema. Las dependencias npm son herramientas de desarrollo y compilación; el Worker no requiere paquetes en tiempo de ejecución.
