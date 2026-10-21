@@ -1,3 +1,7 @@
+# Nuevo espacio de trabajo
+
+Pedidos, Cocina, Mesas y Caja con 6 mesas iniciales, panel lateral, preparación por rondas y pagos parciales/combinados. Las reglas y operación actual están en [docs/workspace.md](docs/workspace.md). La preparación fuera de mesa requiere pago verificado completo.
+
 # KURTOS · Ventas y caja
 
 Aplicación para un local con una caja abierta a la vez. Incluye menú, personalizador 3D, registro de cobros, preparación de pedidos y conciliación de caja.

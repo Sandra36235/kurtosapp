@@ -18,7 +18,7 @@ async function handle(request,db,env={}){try{
  const raw=await request.text();if(raw.length>32768)return json({error:'Pedido demasiado grande.'},413);
  let body;try{body=JSON.parse(raw)}catch{return json({error:'Datos inválidos.'},400)}
  if(!body||typeof body!=='object'||Array.isArray(body))return json({error:'Datos inválidos.'},400);
- if(pathname==='/api/orders/manage'){if(!await verifyOrderGrant(body,env.CATALOG_SYNC_TOKEN))return json({error:'No autorizado.'},401);return json(await manageWebOrders(db,body.action,body.body))}
+ if(pathname==='/api/orders/manage'){if(!await verifyOrderGrant(body,env.CATALOG_SYNC_TOKEN))return json({error:'No autorizado.'},401);return json(await manageWebOrders(db,body.action,body.body,env.CATALOG_SYNC_TOKEN))}
  if(pathname==='/api/orders')return json({order:await createWebOrder(db,await readCatalog(db),body,request.headers.get('Idempotency-Key'))},201);
  if(pathname==='/api/orders/recover')return json({order:await recoverWebOrder(db,body.key)});
  if(pathname==='/api/catalog-sync'){

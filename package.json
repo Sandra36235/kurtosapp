@@ -13,7 +13,7 @@
     "build": "node scripts/build.mjs",
     "db:generate": "drizzle-kit generate",
     "test": "node --test tests/*.test.mjs",
-    "check": "node --check server/domain.mjs && node --check server/api.mjs && node --check server/local.mjs && node --check apps/pos/pos.js && node --check apps/configurator/app.js && node --check apps/configurator/kurtos-3d.js && node --check server/shop-api.mjs && node --check server/shop-domain.mjs && node --check apps/storefront/shop.js && node --check apps/storefront/order.mjs && node --check server/web-orders.mjs && node --check server/order-access.mjs && node --check apps/pos/web-inbox.mjs",
+    "check": "node --check server/domain.mjs && node --check server/api.mjs && node --check server/local.mjs && node --check apps/pos/pos.js && node --check apps/configurator/app.js && node --check apps/configurator/kurtos-3d.js && node --check server/shop-api.mjs && node --check server/shop-domain.mjs && node --check apps/storefront/shop.js && node --check apps/storefront/order.mjs && node --check server/web-orders.mjs && node --check server/order-access.mjs && node --check apps/pos/web-inbox.mjs && node --check server/operations.mjs && node --check server/order-feed.mjs && node --check apps/pos/workspace.js",
     "dev:shop": "node server/local.mjs --shop",
     "build:shop": "node scripts/build.mjs --shop"
   },

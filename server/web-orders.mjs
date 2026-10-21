@@ -1,3 +1,4 @@
+import { signOrderBatch } from './order-feed.mjs';
 import { BusinessError } from './domain.mjs';
 import { quoteCart, isOpen } from './shop-domain.mjs';
 import { withinMap, shippingCents } from '../apps/storefront/order.mjs';
@@ -35,7 +36,9 @@ export async function createWebOrder(db,catalog,body,key){
  const row=await db.prepare('SELECT * FROM web_orders WHERE request_key=?').bind(key).first();if(!row||row.request_hash!==fingerprint)fail('La confirmación cambió. Revisa el pedido guardado.',409);return receipt(row);
 }
 export async function recoverWebOrder(db,key){if(typeof key!=='string'||!/^[-a-zA-Z0-9_]{20,100}$/.test(key))fail('Referencia inválida.');const row=await db.prepare('SELECT id,status,created_at FROM web_orders WHERE request_key=?').bind(key).first();if(!row)fail('El pedido aún no está registrado. Reintenta la confirmación.',404);return receipt(row)}
-export async function manageWebOrders(db,action,body){
+export async function manageWebOrders(db,action,body,secret){
+ if(action==='feed'){const after=body.after||0;if(!Number.isSafeInteger(after)||after<0)fail('Cursor inválido.');const rows=await db.prepare('SELECT * FROM web_orders WHERE id>? ORDER BY id LIMIT 4').bind(after).all();const page=rows.results.slice(0,3);const batch={after,orders:page.map(order),cursor:page.at(-1)?.id||after,more:rows.results.length>3};return {packet:await signOrderBatch(batch,secret)}}
+ if(action==='status')fail('Gestiona preparación, pagos y cancelaciones desde la nueva pizarra de administración.',409);
  if(action==='list'){
   const search=clean(body.search,30);if(search&&!/^#?\d+$/.test(search))fail('Busca por número de pedido.');
   const number=search?Number(search.replace('#',''))-10000:null;

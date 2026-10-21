@@ -1,3 +1,7 @@
+# Flujo actualizado
+
+La administración usa ahora la pizarra de Pedidos y la cocina unificada. Ver [workspace.md](workspace.md) para la operación vigente. Los estados de preparación y cobros se gestionan en la base privada, después de importar el original web con firma. La gestión anterior de estados de la tienda ya no permite avanzar a preparación.
+
 # Pedidos de la tienda y delivery
 
 Tienda: https://kurtos-delivery.sandraabasto.chatgpt.site
