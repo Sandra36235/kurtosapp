@@ -4,3 +4,5 @@
 .product-photo{width:105px}.product-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#fff 0,transparent 16%,transparent 84%,#fff 100%),linear-gradient(0deg,#fff 0,transparent 9%,transparent 96%,#fff 100%);pointer-events:none}
 
 .mobile-cart{display:none}@media(max-width:700px){.mobile-cart{display:block;position:fixed;bottom:76px;left:20px;right:20px;background:var(--blue);color:white;z-index:9;padding:13px;box-shadow:0 6px 25px #123c8225;font-size:12px}.app footer{padding-bottom:60px}.cart{scroll-margin-top:12px}}
+
+@media(max-width:700px){.sidebar nav{grid-template-columns:repeat(6,minmax(0,1fr))}.sidebar nav button span{font-size:8px}.sidebar nav button{padding-inline:3px}.sidebar nav b{font-size:8px}}

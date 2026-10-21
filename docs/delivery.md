@@ -1,36 +1,52 @@
-# Tienda pública y delivery
+# Pedidos de la tienda y delivery
 
 Tienda: https://kurtos-delivery.sandraabasto.chatgpt.site
 
-Caja privada: https://cono-studio-quyi.sandraabasto.chatgpt.site
+Administración privada: https://cono-studio-quyi.sandraabasto.chatgpt.site
 
 ## Cliente
 
-Elige del menú o arma un Kurto en el personalizador 3D. Revisa el carrito, elige delivery o retiro y completa nombre y teléfono. Para delivery agrega dirección y referencia, y marca el destino en el mapa, usa la ubicación del dispositivo o introduce coordenadas. La cobertura se confirma por WhatsApp: no hay un polígono comercial exacto definido todavía.
+Elige del menú o arma un Kurto en 3D, revisa el carrito y elige delivery o retiro. Completa nombre y celular. Para delivery agrega dirección, referencia y punto del mapa. Revisa el resumen y pulsa **Confirmar pedido**.
 
-El mapa se centra en Cochabamba, Cercado, zona norte. La salida usa el punto del enlace proporcionado por Sandra (Google Maps lo identifica como UPAL): -17.369493, -66.1602265. Verificar ese punto antes de anunciar la tienda a clientes.
+El servidor valida disponibilidad, variantes y precios y guarda el pedido en D1 antes de entregar un número único, comenzando con #10001. No se usa un número aleatorio del navegador. Si falla la conexión, se reintenta la misma confirmación con su identificador y se recupera el número original, sin crear otro pedido. Los intentos pendientes se conservan temporalmente en la sesión del navegador para recuperarlos tras recargar; se limpian al confirmar. El botón del último pedido conserva solo su número y fecha en esa sesión.
 
-La tarifa es Bs 4 por km **de recorrido por calles**, no de distancia recta. El botón de Google Maps abre la ruta desde el local al destino. El cliente puede copiar los kilómetros que ve allí para obtener una estimación; si los deja vacíos, el envío queda por confirmar. **La web no obtiene automáticamente la distancia vial** y nunca sustituye esa distancia por una línea recta. El envío se redondea a centavos; retiro no tiene costo. Para automatizar el cálculo hace falta conectar un servicio de rutas apto para uso comercial, con su credencial o infraestructura propia. No usamos servidores de demostración restringidos a uso no comercial.
+Después de guardar aparece **Consultar mi pedido por WhatsApp**. El texto es exactamente `consultar mi pedido #10001` (con el número real). No incluye nombre, productos, dirección, importes o datos de contacto. El cliente debe enviar la consulta en WhatsApp; no se envían mensajes automáticamente.
 
-El resumen abre un enlace a WhatsApp +591 65761716 con productos, cantidades, variantes, notas, ubicación, datos del cliente y subtotal/estimación. El cliente debe pulsar Enviar en WhatsApp. El enlace no confirma disponibilidad, no registra ventas y no cobra. La confirmación y el pago se coordinan en la conversación. Horario: martes a domingo de 10:00 a 19:00, America/La_Paz. Fuera de horario se permite consultar para la próxima apertura, con aviso explícito.
-
-Solo el carrito se guarda en el navegador. El formulario de entrega vive en memoria y se pierde al recargar; la tienda no guarda datos del cliente en D1. OpenStreetMap provee el mapa y recibe las solicitudes de sus imágenes; Google Maps se abre solo al pulsar sus enlaces. WhatsApp recibe el texto cuando el cliente abre el enlace.
+El local ya tiene los detalles en la bandeja interna. Confirmar el pedido no cobra ni promete disponibilidad. El número no habilita una consulta pública de los datos del cliente.
 
 ## Operación
 
-1. Confirmar disponibilidad, dirección, cobertura y recorrido en Google Maps en WhatsApp.
-2. Abrir caja y registrar productos y observaciones cuando corresponda confirmar el cobro. Seleccionar Delivery, ingresar recorrido confirmado (hasta dos decimales, 0.01–50 km) y dirección. Caja calcula productos + Bs 4/km en el servidor. Para retiro, seleccionar Para llevar / retiro.
-3. Registrar el cobro efectivo/QR/tarjeta según el medio confirmado. La venta incluye el envío, conservado por separado en el comprobante, y afecta conciliación y devoluciones. Si se paga al repartidor, confirmar el cobro solo cuando se verifique la recepción del dinero.
-4. Preparar y marcar listo/entregado. Los pedidos de WhatsApp se gestionan en WhatsApp: no existe bandeja automática ni integración con WhatsApp Business API.
+En la administración, abrir **Pedidos web**. La insignia indica los pendientes de aceptación. Se actualiza cada 20 segundos cuando no hay una ventana de gestión o un campo en edición; también tiene actualización manual. Muestra los activos y recientes (hasta 200), permite filtrar y buscar por número exacto para recuperar pedidos anteriores.
 
-Los cambios de precio y disponibilidad en Menú y precios intentan sincronizar la tienda automáticamente. Si falla, los cambios de caja permanecen guardados y el aviso indica que debe reintentarse con **Publicar menú en tienda**. Ese botón también sirve para una publicación manual. La tienda rechaza snapshots antiguos. El cliente vuelve a validar disponibilidad y precios al revisar el pedido.
+**Ver y gestionar pedido** muestra productos, cantidades, variantes, configuraciones 3D, notas, nombre, teléfono, dirección y enlace al punto de entrega. Los estados se conservan en base de datos: Por confirmar → Aceptado → En preparación → Listo → Entregado. Cancelar requiere un motivo y conserva el historial. No se pueden saltar pasos ni cancelar un pedido entregado. Las revisiones evitan que dos ventanas sobrescriban cambios simultáneos.
 
-## Arquitectura y desarrollo
+Para aceptar delivery, confirmar el recorrido por calles en Google Maps e introducir los kilómetros con hasta dos decimales. La tarifa es Bs 4/km y se guarda separada de los productos. Mientras el envío no está confirmado, el total definitivo queda pendiente; la distancia ingresada por el cliente solo produce una estimación. Retiro no tiene costo de envío.
 
-- `npm run dev:shop`: tienda local, puerto de PORT o 4173, base independiente `data/shop.sqlite`.
-- `npm run dev`: caja privada, base `data/kurtos.sqlite`. Ejecutar en puertos distintos para probar ambos.
-- `npm run build:shop`: Worker público que integra únicamente apps/storefront y apps/configurator. `npm run build`: Worker privado con POS y configurador. Ambos construyen en dist; empaquetar cada destino inmediatamente después de su build.
-- La tienda usa una base D1 propia con las migraciones existentes. Solo guarda un registro setting/public-catalog. Sus rutas públicas son GET /api/catalog y POST /api/quote; POST /api/catalog-sync requiere autenticación. La caja firma un snapshot público con HMAC-SHA256 y vencimiento de cinco minutos; su navegador lo transporta a la tienda, que verifica la firma y acepta CORS únicamente desde el origen de la caja. El secreto nunca se envía al navegador. Esto evita depender de llamadas entre Workers del mismo dominio. No expone ni importa la API privada de caja ni sirve pos.js o pos.css.
-- Configurar **CATALOG_SYNC_TOKEN** (secreto) idéntico en ambos sitios y **STOREFRONT_URL** en caja. POS_ORIGIN puede definir el origen permitido de caja en la tienda; por defecto se usa la URL privada publicada. Usar herramientas nativas de Sites; nunca poner el secreto en Git o código del navegador. Localmente se pueden pasar variables de entorno sin subirlas.
-- La frontera de acceso privada la mantiene Sites: no hacer pública la caja. La tienda es un Site público separado. La sincronización solo transmite identificadores/precios/disponibilidad/tarifas y una revisión; nunca ventas, efectivo, operadores o clientes.
-- El repositorio de GitHub guarda ambos destinos. Los repositorios de publicación de Sites son independientes y conservan cada identidad en su manifest local. Publicar ambos cuando cambien módulos compartidos.
+El cobro se registra por separado en la caja existente, con productos, servicio Delivery, recorrido confirmado y dirección, según lo acordado y verificado con el cliente. **Los estados de la bandeja no crean ventas ni registran pagos**. Para retiro, seleccionar Para llevar / retiro. Las ventas siguen afectando caja, conciliación y devoluciones mediante sus operaciones existentes.
+
+Horario: martes a domingo, 10:00–19:00, America/La_Paz. Fuera de horario se pueden enviar pedidos para consultar la próxima apertura y se identifican internamente como recibidos fuera de horario.
+
+## Mapa y tarifas
+
+Mapa de Cochabamba, Cercado, zona norte. La salida es el punto del enlace enviado por Sandra, identificado en Google Maps como UPAL: -17.369493, -66.1602265. La cobertura se confirma con el cliente; todavía no hay un polígono comercial exacto definido.
+
+La distancia es el recorrido **por calles**, no una línea recta. El cliente puede abrir Google Maps y copiar los kilómetros para estimar Bs 4/km, o dejarlos pendientes. La web no obtiene automáticamente esa distancia vial. Automatizarla requiere un proveedor apto para uso comercial y sus credenciales o infraestructura propia.
+
+## Datos y acceso
+
+- La tabla `web_orders` en la D1 de la tienda guarda el pedido, clave/hash de confirmación únicos, estado, revisión, fecha e historial. La numeración es 10000 + id autoincremental; puede haber saltos, nunca duplicados.
+- `POST /api/orders` crea el pedido. `POST /api/orders/recover` permite recuperar solo número, estado y fecha usando la clave de confirmación aleatoria del cliente. No hay consulta pública por número ni listado público.
+- `POST /api/orders/manage` requiere una autorización HMAC de la caja privada, con finalidad específica, acción, datos y vencimiento de un minuto. El navegador transporta esa autorización; el secreto permanece en los servidores. CORS acepta únicamente el origen de la administración. Una firma de catálogo no sirve para consultar pedidos.
+- La caja emite esas autorizaciones desde `/api/storefront/orders`, dentro del Site privado. No se hace pública la caja ni sus APIs de ventas o efectivo. La tienda pública sirve únicamente storefront y configurador.
+- Configurar `CATALOG_SYNC_TOKEN` (secreto idéntico en ambos sitios) y `STOREFRONT_URL` en caja. `POS_ORIGIN` en tienda permite cambiar su origen autorizado; por defecto usa la URL privada publicada. Configurar valores con las herramientas nativas de Sites, nunca en Git o en el navegador.
+- Los datos del cliente ahora se guardan para atender su pedido; el formulario lo informa antes de confirmar. OpenStreetMap recibe las solicitudes de imágenes del mapa. Google Maps y WhatsApp se abren solo al pulsar sus enlaces.
+- Los precios y disponibilidad se sincronizan desde Menú y precios al guardar, o con Publicar menú en tienda. La tienda valida precios nuevamente al confirmar; los pedidos ya guardados conservan su precio original.
+- La exportación de caja contiene las ventas y registros de su propia base; no incluye automáticamente la tabla de pedidos de la D1 de la tienda.
+
+## Desarrollo
+
+`npm run dev:shop` inicia la tienda y aplica migraciones a `data/shop.sqlite`; `npm run dev` inicia caja y usa `data/kurtos.sqlite`. Ejecutar en puertos distintos. Para la bandeja local, configurar `POS_ORIGIN`, `STOREFRONT_URL` y un secreto de prueba igual en ambos procesos. Nunca usar datos reales en pruebas.
+
+`npm run build:shop` genera el Worker público; `npm run build` genera el privado. Ambos usan `dist`, por lo que se empaquetan por separado. Publicar ambos destinos cuando cambien módulos compartidos. Las migraciones generadas se aplican antes de publicar y no deben editarse una vez aplicadas.
+
+El repositorio GitHub guarda ambos destinos; cada checkout de Sites conserva su propia identidad en `.openai/hosting.json`. No copiar bases locales ni secretos a esos checkouts.
