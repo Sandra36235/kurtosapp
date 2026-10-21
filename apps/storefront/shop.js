@@ -35,4 +35,4 @@ $('#order-form').onsubmit=async e=>{e.preventDefault();if(busy)return;busy=true;
  const message=createMessage({quote,customer:data.get('customer'),phone:data.get('phone'),service,address:data.get('address'),reference:data.get('reference'),note:data.get('note'),destination,distance:data.get('distance'),open:catalog.open,code:'K-'+crypto.randomUUID().slice(0,8).toUpperCase()});
  const url='https://wa.me/'+catalog.shop.whatsapp+'?text='+encodeURIComponent(message);if(url.length>14000)throw Error('Tu pedido es muy largo para un enlace de WhatsApp. Reduce las notas o productos.');$('#review-message').textContent=message;$('#send-whatsapp').href=url;$('#review-dialog').showModal();
  }catch(error){$('#form-error').textContent=error.message||'No pudimos conectar. Intenta nuevamente.'}finally{busy=false;$('#review-order').disabled=false}};
-await loadCatalog();if(catalog)initLocalMap();updateCount();
+await loadCatalog();if(catalog){initLocalMap();if(['#menu','#delivery'].includes(location.hash))document.querySelector(location.hash)?.scrollIntoView({block:'start'})}updateCount();

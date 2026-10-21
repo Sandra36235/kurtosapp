@@ -11,3 +11,7 @@
 .product-art:has([aria-label="Kurto Top"]) .product-photo,.product-art:has([aria-label="Kurto Clásico"]) .product-photo{clip-path:inset(0 25px 5px 35px)}
 .product-art:has([aria-label="Kurto Crema"]) .product-photo{clip-path:polygon(30px 0,150px 0,150px 245px,80px 245px,63px 130px,30px 100px)}
 .product-art:has([aria-label="Kurto Dulce"]) .product-photo{clip-path:inset(70px 0 80px 0);transform:translateY(-5px) scale(1.12)}
+.product-art:has([aria-label="Kurto Top"]) .product-photo{clip-path:polygon(35px 0,155px 0,155px 190px,140px 245px,70px 245px,50px 175px,35px 140px)}
+.product-art:has([aria-label="Kurto Clásico"]) .product-photo{clip-path:inset(0 35px 9px 35px)}
+.product-art:has([aria-label="Kurto Crema"]) .product-photo{clip-path:polygon(60px 35px,150px 35px,150px 245px,100px 245px,85px 185px,65px 125px,45px 100px,45px 65px)}
+.product-art:has([aria-label="Kurto Dulce"]) .product-photo{clip-path:inset(82px 3px 98px 0)}
