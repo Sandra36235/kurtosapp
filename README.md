@@ -60,3 +60,9 @@ El nombre del responsable identifica el turno y no autentica a un empleado. El s
 El despliegue Sites usa el binding D1 `DB`. Su configuración de cuenta y credenciales no están incluidas en GitHub. Los datos locales y alojados están separados y los datos de prueba nunca se copian al despliegue. GitHub todavía no tiene un despliegue automático configurado.
 
 Three.js 0.170.0 está incluido y conserva su [licencia MIT](apps/configurator/vendor/THREE-LICENSE.txt). Las fuentes de Google Fonts cuentan con respaldos del sistema. Las dependencias npm son herramientas de desarrollo y compilación; el Worker no requiere paquetes en tiempo de ejecución.
+# Tienda pública y delivery
+
+La app incluye una tienda pública separada de la caja: [KURTOS Delivery](https://kurtos-delivery.sandraabasto.chatgpt.site). Menú, personalizador 3D, carrito, mapa de Cochabamba, retiro y pedidos por WhatsApp. No cobra en línea. Ver [operación y arquitectura de delivery](docs/delivery.md), incluida la estimación de Bs 4/km por recorrido por calles y la sincronización del catálogo.
+
+`npm run dev:shop` inicia la tienda local con una base independiente; `npm run build:shop` genera únicamente el sitio público. La caja conserva `npm run dev` y `npm run build`. No publicar el destino de caja con acceso público.
+

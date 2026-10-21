@@ -4,14 +4,22 @@
   "private": true,
   "description": "Base de la app de ventas KURTOS: personalizador 3D paso a paso",
   "type": "module",
-  "engines": { "node": ">=22.13" },
+  "engines": {
+    "node": ">=22.13"
+  },
   "scripts": {
     "dev": "node server/local.mjs",
     "start": "node server/local.mjs",
     "build": "node scripts/build.mjs",
     "db:generate": "drizzle-kit generate",
     "test": "node --test tests/*.test.mjs",
-    "check": "node --check server/domain.mjs && node --check server/api.mjs && node --check server/local.mjs && node --check apps/pos/pos.js && node --check apps/configurator/app.js && node --check apps/configurator/kurtos-3d.js"
+    "check": "node --check server/domain.mjs && node --check server/api.mjs && node --check server/local.mjs && node --check apps/pos/pos.js && node --check apps/configurator/app.js && node --check apps/configurator/kurtos-3d.js && node --check server/shop-api.mjs && node --check server/shop-domain.mjs && node --check apps/storefront/shop.js && node --check apps/storefront/order.mjs",
+    "dev:shop": "node server/local.mjs --shop",
+    "build:shop": "node scripts/build.mjs --shop"
   },
-  "devDependencies": { "esbuild": "0.25.12", "drizzle-kit": "0.31.5", "drizzle-orm": "0.44.7" }
+  "devDependencies": {
+    "esbuild": "0.25.12",
+    "drizzle-kit": "0.31.5",
+    "drizzle-orm": "0.44.7"
+  }
 }

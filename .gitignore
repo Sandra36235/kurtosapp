@@ -12,3 +12,5 @@ dist/
 *.sqlite*
 
 worker/assets.generated.mjs
+
+worker/shop-assets.generated.mjs
